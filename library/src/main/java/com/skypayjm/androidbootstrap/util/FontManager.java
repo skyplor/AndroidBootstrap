@@ -1,6 +1,6 @@
 package com.skypayjm.androidbootstrap.util;
 
-import android.content.res.AssetManager;
+import android.content.Context;
 import android.graphics.Typeface;
 
 import java.util.HashMap;
@@ -12,17 +12,33 @@ import java.util.Map;
 public class FontManager {
     private static FontManager instance;
 
-    private AssetManager mgr;
+    //    private AssetManager mgr;
+    private Context mContext;
 
-    private Map<String, Typeface> fonts;
+    private Map<String, Typeface> mFonts;
 
-    private FontManager(AssetManager _mgr) {
-        mgr = _mgr;
-        fonts = new HashMap<String, Typeface>();
+    private FontManager(Context context) {
+//        mgr = _mgr;
+        mContext = context;
+        mFonts = new HashMap<>();
     }
 
-    public static void init(AssetManager mgr) {
-        instance = new FontManager(mgr);
+    /**
+     * Builds a typeface list by font file name, the file name are after apply used as typeface key.
+     */
+    public FontManager define(String[] fonts) {
+        Typeface typeface;
+
+        for (String font : fonts) {
+            typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/" + font);
+            mFonts.put(font, typeface);
+        }
+
+        return this;
+    }
+
+    public static void init(Context context) {
+        instance = new FontManager(context);
     }
 
     public static FontManager getInstance() {
@@ -30,30 +46,31 @@ public class FontManager {
     }
 
     public Typeface getFont(String asset) {
-        if (fonts.containsKey(asset))
-            return fonts.get(asset);
+        if (mFonts.containsKey(asset))
+            return mFonts.get(asset);
 
-        Typeface font = null;
+//        Typeface font = null;
+//
+//        try {
+//            font = Typeface.createFromAsset(mgr, asset);
+//            mFonts.put(asset, font);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        if (font == null) {
+//            try {
+//                String fixedAsset = fixAssetFilename(asset);
+//                font = Typeface.createFromAsset(mgr, fixedAsset);
+//                fonts.put(asset, font);
+//                fonts.put(fixedAsset, font);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
 
-        try {
-            font = Typeface.createFromAsset(mgr, asset);
-            fonts.put(asset, font);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (font == null) {
-            try {
-                String fixedAsset = fixAssetFilename(asset);
-                font = Typeface.createFromAsset(mgr, fixedAsset);
-                fonts.put(asset, font);
-                fonts.put(fixedAsset, font);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        return font;
+//        return font;
+        return null;
     }
 
     private String fixAssetFilename(String asset) {
